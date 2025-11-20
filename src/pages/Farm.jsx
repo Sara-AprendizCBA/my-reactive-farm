@@ -12,7 +12,7 @@ const STATUSES = ["all", "healthy", "review", "sick"];
 
 export default function Farm() {
   const [animals, setAnimals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);  // ← cambio de ACT1
   const [loadError, setLoadError] = useState(null);
 
   // Filtros UI
@@ -59,20 +59,29 @@ export default function Farm() {
   }
 
   // Derivar lista filtrada + búsqueda
-  const filteredAnimals = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return animals.filter((a) => {
-      const byType = typeFilter === "all" || a.type === typeFilter;
-      const byStatus = statusFilter === "all" || a.status === statusFilter;
-      const byQuery =
-        q.length === 0 ||
-        a.name?.toLowerCase().includes(q) ||
-        a.type?.toLowerCase().includes(q) ||
-        String(a.weight).includes(q) ||
-        String(a.age).includes(q);
-      return byType && byStatus && byQuery;
-    });
-  }, [animals, typeFilter, statusFilter, query]);
+const filteredAnimals = useMemo(() => {
+  const q = query.trim().toLowerCase();
+
+  return animals.filter((a) => {
+    const byType = typeFilter === "all" || a.type === typeFilter;
+    const byStatus = statusFilter === "all" || a.status === statusFilter;
+
+    const byQuery =
+      q.length === 0 ||
+      a.name?.toLowerCase().includes(q) ||
+      a.type?.toLowerCase().includes(q) ||
+      String(a.weight).includes(q) ||
+      String(a.age).includes(q);
+
+    // Nuevo filtro por edad mínima
+    const byMinAge =
+      minAgeFilter === "" || a.age >= Number(minAgeFilter);
+
+    // ← AÑADIMOS byMinAge aquí
+    return byType && byStatus && byQuery && byMinAge;
+  });
+}, [animals, typeFilter, statusFilter, query, minAgeFilter]);
+
 
   return (
     <Layout title="My Reactive Farm 🐄🌾">
@@ -98,6 +107,7 @@ export default function Farm() {
             </h2>
 
             <AnimalList animals={filteredAnimals}>
+
               {/* Controls (composición) */}
               <div className="flex flex-wrap items-center gap-3">
                 {/* Search */}
@@ -146,6 +156,18 @@ export default function Farm() {
                     </option>
                   ))}
                 </select>
+                                {/* Age Filter */}
+                <label className="sr-only" htmlFor="min-age">
+                  Min Age
+                </label>
+                <input
+                  id="min-age"
+                  type="number"
+                  value={minAgeFilter}
+                  onChange={(e) => setMinAgeFilter(e.target.value)}
+                  placeholder="Min age"
+                  className="w-32 rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100"
+                />
               </div>
             </AnimalList>
           </section>

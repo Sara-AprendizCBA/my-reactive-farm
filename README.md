@@ -1,16 +1,78 @@
-# React + Vite
+# Actividad 1: Modificar y explicar un estado
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- Cambia el valor inicial de un estado existente (ej.: loading, animals, typeFilter).
+- Observa qué sucede en la interfaz al cargar la aplicación.
+- Explica qué estado modificaste, qué cambió visualmente y cómo se relaciona con el renderizado.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Archivo:
 
-## React Compiler
+```
+src/pages/Farm.jsx
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+En la parte:
 
-## Expanding the ESLint configuration
+```Jsx
+export default function Farm() {
+  const [animals, setAnimals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+## Codigo Modificado:
+
+```Jsx
+export default function Farm() {
+  const [animals, setAnimals] = useState([]);
+  const [loading, setLoading] = useState(false);  // ← cambio de ACT1
+  const [loadError, setLoadError] = useState(null);
+
+```
+
+##  Que cambia en la interfaz:
+
+Antes:
+
+- Al entrar a la página aparecía el componente  ```<Loader />``` con el mensaje:
+**“Fetching animals from the farm…”**
+
+Después:
+
+- El loader ya no aparece.
+- Se muestra directamente:
+- El formulario
+- Los filtros
+- La lista
+
+Porque ```loading``` comienza como ```false```.
+
+## Explicación técnica
+
+Cambié el estado inicial:
+
+```Jsx
+
+const [loading, setLoading] = useState(true);
+
+```
+
+Por esto:
+
+```jsx
+
+const [loading, setLoading] = useState(false);
+
+```
+
+Esto hace que la aplicación **salte el estado de carga inicial** y renderice inmediatamente la interfaz. El renderizado condicional:
+
+
+```jsx
+
+{loading && <Loader message="Fetching animals from the farm…" />}
+
+```
+
+ya no se ejecuta, porque *loading* ya no es *true*.

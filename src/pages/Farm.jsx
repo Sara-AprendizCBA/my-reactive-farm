@@ -12,7 +12,7 @@ const STATUSES = ["all", "healthy", "review", "sick"];
 
 export default function Farm() {
   const [animals, setAnimals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);  // ← cambio de ACT1
   const [loadError, setLoadError] = useState(null);
 
   // Filtros UI

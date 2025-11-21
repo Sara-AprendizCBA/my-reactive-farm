@@ -1,16 +1,117 @@
-# React + Vite
+# Actividad 3: Mejorar el formulario
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- Revisa el formulario de creación de animales.
+- Piensa en dos mejoras de experiencia de usuario.
+- Implementa las mejoras seleccionadas.
+- Explica qué cambiaste y por qué mejora la experiencia. (README.md)
 
-Currently, two official plugins are available:
+## Archivo:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+src/components/AnimalForm.jsx
 
-## React Compiler
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Codigo donde se trabaja
 
-## Expanding the ESLint configuration
+Se agrego el *UseCallback* justo denajos de sus estados:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```Jsx
+
+export default function Farm() {
+  const [animals, setAnimals] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+  const [typeFilter, setTypeFilter] = useState("all");
+
+```
+
+## Cambios realizados
+
+### ✔️ 1. Se creó un componente Loader.jsx
+
+Sirve como indicador visual mientras los componentes son cargados dinámicamente.
+
+### ✔️ 2. Se aplicó React.lazy
+
+En el archivo Farm.jsx se modificó la importación de los componentes para que se carguen bajo demanda:
+
+```Jsx
+
+const AnimalList = React.lazy(() => import("../components/AnimalList.jsx"));
+const AnimalForm = React.lazy(() => import("../components/AnimalForm.jsx"));
+
+
+```
+
+## 3. Se envolvió el contenido dentro de ```<Suspense>```
+
+Esto permite mostrar el Loader mientras los componentes terminan de cargarse:
+
+```Jsx
+
+<Suspense fallback={<Loader />}>
+  <AnimalForm />
+  <AnimalList animals={animals} />
+</Suspense>
+
+
+```
+## 📝 Código final implementado
+
+### Loader.jsx
+
+```Jsx
+
+export default function Loader() {
+  return (
+    <div className="loader-container">
+      <div className="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+  );
+}
+
+
+```
+
+## (con lazy + suspense)
+
+```Jsx
+
+import React, { useState, Suspense } from "react";
+import Loader from "../components/Loader";
+
+// Lazy imports
+const AnimalList = React.lazy(() => import("../components/AnimalList.jsx"));
+const AnimalForm = React.lazy(() => import("../components/AnimalForm.jsx"));
+
+export default function Farm() {
+  const [animals, setAnimals] = useState([]);
+
+  const addAnimal = (newAnimal) => {
+    setAnimals([...animals, newAnimal]);
+  };
+
+  return (
+    <div className="farm-container">
+      <h1>My Reactive Farm</h1>
+
+      <Suspense fallback={<Loader />}>
+        <AnimalForm addAnimal={addAnimal} />
+        <AnimalList animals={animals} />
+      </Suspense>
+    </div>
+  );
+}
+
+```
+
+## 🚀 Resultado final
+
+la aplicación ahora:
+
+- Carga componentes pesados solo cuando se necesitan.
+- Reduce el bundle inicial.
+- Muestra un loader elegante y claro.
+- Mejora la experiencia del usuario en conexiones lentas
